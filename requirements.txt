@@ -1,0 +1,5 @@
+pandas
+scikit-learn
+dvc
+dvc-s3
+boto3
