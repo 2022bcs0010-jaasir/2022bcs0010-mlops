@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ml-training-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: ml-container
+        image: your-docker-username/your-image:latest
+        command: ["python", "train.py"]
+
+      restartPolicy: Never
+  backoffLimit: 4
