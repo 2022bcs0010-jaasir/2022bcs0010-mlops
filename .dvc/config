@@ -2,4 +2,3 @@
     remote = myremote
 ['remote "myremote"']
     url = s3://2022bcs0010-mlops-assignment
-
