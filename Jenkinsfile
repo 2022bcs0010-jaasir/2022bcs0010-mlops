@@ -6,8 +6,7 @@ pipeline {
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
         AWS_SESSION_TOKEN = credentials('aws-session-token')
 
-        DOCKER_CREDS = credentials('docker-access')
-
+        DOCKER_ACCESS = credentials('docker-access')  // <-- keeps your original secret
         MLFLOW_TRACKING_URI = "http://host.docker.internal:8080"
         BUCKET_NAME = "2022bcs0010-mlops-assignment"
     }
@@ -20,19 +19,19 @@ pipeline {
             }
         }
 
-       stage('Install Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
                 # Create a virtual environment
                 python3 -m venv venv
 
-                # Activate it
+                # Activate virtual environment
                 . venv/bin/activate
 
                 # Upgrade pip inside venv only
                 pip install --upgrade pip
 
-                # Install project requirements
+                # Install project dependencies
                 pip install -r requirements.txt
                 pip install mlflow boto3 dvc[s3] scikit-learn
                 '''
@@ -42,6 +41,10 @@ pipeline {
         stage('Configure AWS') {
             steps {
                 sh '''
+                # Activate virtual environment
+                . venv/bin/activate
+
+                # Configure AWS CLI
                 aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
                 aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
                 aws configure set aws_session_token $AWS_SESSION_TOKEN
@@ -53,6 +56,10 @@ pipeline {
         stage('Pull Data (DVC)') {
             steps {
                 sh '''
+                # Activate virtual environment
+                . venv/bin/activate
+
+                # Pull dataset from DVC
                 dvc pull
                 '''
             }
@@ -61,7 +68,12 @@ pipeline {
         stage('Train Model + MLflow Logging') {
             steps {
                 sh '''
-                MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI python src/train.py
+                # Activate virtual environment
+                . venv/bin/activate
+
+                # Run training with MLflow logging
+                export MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
+                python src/train.py
                 '''
             }
         }
@@ -69,7 +81,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build -t $DOCKER_USERNAME/2022bcs0010-mlops-assignment .
+                docker build -t $DOCKER_ACCESS/2022bcs0010-mlops-assignment .
                 '''
             }
         }
@@ -77,8 +89,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 sh '''
-                echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin
-                docker push $DOCKER_USERNAME/2022bcs0010-mlops-assignment
+                echo $DOCKER_ACCESS_PSW | docker login -u $DOCKER_ACCESS_USR --password-stdin
+                docker push $DOCKER_ACCESS/2022bcs0010-mlops-assignment
                 '''
             }
         }
