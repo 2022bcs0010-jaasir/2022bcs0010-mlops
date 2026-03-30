@@ -7,7 +7,7 @@ pipeline {
         AWS_SESSION_TOKEN = credentials('aws-session-token')
 
         DOCKER_ACCESS = credentials('docker-access')  // <-- keeps your original secret
-        MLFLOW_TRACKING_URI = "http://host.docker.internal:8080"
+        MLFLOW_TRACKING_URI = "http://host.docker.internal:5000"
         BUCKET_NAME = "2022bcs0010-mlops-assignment"
     }
 
