@@ -100,7 +100,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build -t $DOCKER_ACCESS/2022bcs0010-mlops-assignment .
+                docker build -t $DOCKER_ACCESS_USR/2022bcs0010-mlops-assignment .
                 '''
             }
         }
@@ -109,7 +109,7 @@ pipeline {
             steps {
                 sh '''
                 echo $DOCKER_ACCESS_PSW | docker login -u $DOCKER_ACCESS_USR --password-stdin
-                docker push $DOCKER_ACCESS/2022bcs0010-mlops-assignment
+                docker push $DOCKER_ACCESS_USR/2022bcs0010-mlops-assignment
                 '''
             }
         }
