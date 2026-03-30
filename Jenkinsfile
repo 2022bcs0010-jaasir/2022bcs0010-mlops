@@ -20,10 +20,19 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+       stage('Install Dependencies') {
             steps {
                 sh '''
+                # Create a virtual environment
+                python3 -m venv venv
+
+                # Activate it
+                . venv/bin/activate
+
+                # Upgrade pip inside venv only
                 pip install --upgrade pip
+
+                # Install project requirements
                 pip install -r requirements.txt
                 pip install mlflow boto3 dvc[s3] scikit-learn
                 '''
