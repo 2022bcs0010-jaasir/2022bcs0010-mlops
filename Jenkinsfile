@@ -16,7 +16,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/2022bcs0010-jaasir/2022bcs0010-mlops'
+                git branch: 'main', url: 'https://github.com/2022bcs0010-jaasir/2022bcs0010-mlops'
             }
         }
 
