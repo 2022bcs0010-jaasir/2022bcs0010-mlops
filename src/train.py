@@ -10,7 +10,10 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
 
-mlflow.set_tracking_uri("http://localhost:8080")
+import mlflow
+import os
+
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
 mlflow.set_experiment("2022bcs0010_assignment")
 
 data = pd.read_csv("data/housing.csv")
