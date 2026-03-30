@@ -6,8 +6,7 @@ pipeline {
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
         AWS_SESSION_TOKEN = credentials('aws-session-token')
 
-        DOCKER_USERNAME = credentials('docker-username')
-        DOCKER_PASSWORD = credentials('docker-password')
+        DOCKER_CREDS = credentials('docker-access')
 
         MLFLOW_TRACKING_URI = "http://host.docker.internal:8080"
         BUCKET_NAME = "2022bcs0010-mlops-assignment"
@@ -53,8 +52,7 @@ pipeline {
         stage('Train Model + MLflow Logging') {
             steps {
                 sh '''
-                export MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
-                python src/train.py
+                MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI python src/train.py
                 '''
             }
         }
@@ -70,7 +68,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 sh '''
-                echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin
                 docker push $DOCKER_USERNAME/2022bcs0010-mlops-assignment
                 '''
             }
